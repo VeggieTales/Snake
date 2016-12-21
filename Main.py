@@ -40,12 +40,16 @@ speed = 10
 foodCount = 0
 foodCheck = False
 
+snakeLength = 1
+xTrail = []
+yTrail = []
+
 
 #main running loop
 while running:
 
     #frames per second
-    clock.tick(30)
+    clock.tick(2)
 
     for event in pygame.event.get():
 
@@ -96,20 +100,32 @@ while running:
     snakeCoord = snake.rect.center
     snakeCoord_x, snakeCoord_y = snakeCoord
 
-    if (snakeCoord_x - (width/2)) <= 0:
+    if (snakeCoord_x - (width/2)) < 0:
         running = False
 
         
-    elif (snakeCoord_x + (width/2)) >= SCREENWIDTH:
+    elif (snakeCoord_x + (width/2)) > SCREENWIDTH:
         running = False
 
 
-    elif (snakeCoord_y - (height/2)) <= 0:
+    elif (snakeCoord_y - (height/2)) < 0:
         running = False
 
 
-    elif (snakeCoord_y + (height/2)) >= SCREENHEIGHT:
+    elif (snakeCoord_y + (height/2)) > SCREENHEIGHT:
         running = False
+
+    ### snake length ###
+    xTrail.append(snake.rect.left)
+    yTrail.append(snake.rect.top)
+
+    if len(xTrail) > snakeLength:
+        xTrail.remove(xTrail[0])
+
+    if len(yTrail) > snakeLength:
+        yTrail.remove(yTrail[0])
+      
+
 
     ### food ###
     if foodCheck == False:
@@ -122,20 +138,18 @@ while running:
 
         foodList.add(food)
         
-        foodCheck = True
-
-        #add another body section every 3 foods eaten
-        #if foodCount %3 == 0:
-            
+        foodCheck = True           
 
     foodCollisionList = pygame.sprite.spritecollide(snake, foodList, False)
     for i in foodCollisionList:
         foodCount += 1
         foodList.remove(food)
         foodCheck = False
-
+        snakeLength += 1
 
         
+    
+      
     #update sprite list
     spritesList.update()
     foodList.update()
