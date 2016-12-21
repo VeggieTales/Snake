@@ -19,6 +19,7 @@ pygame.display.set_caption("Snek Game")
 #sprite lists
 spritesList = pygame.sprite.Group()
 foodList = pygame.sprite.Group()
+trailList = pygame.sprite.Group()
 
 #sprites size
 width = 10
@@ -49,7 +50,7 @@ yTrail = []
 while running:
 
     #frames per second
-    clock.tick(2)
+    clock.tick(30)
 
     for event in pygame.event.get():
 
@@ -62,19 +63,19 @@ while running:
         elif event.type == pygame.KEYDOWN:
 
             #up arrow
-            if event.key == pygame.K_UP:
+            if (event.key == pygame.K_UP) and (direction != "down"):
                 direction = "up"
 
             #down arrow
-            elif event.key == pygame.K_DOWN:
+            elif (event.key == pygame.K_DOWN) and (direction != "up"):
                 direction = "down"
 
             #left arrow
-            elif event.key == pygame.K_LEFT:
+            elif (event.key == pygame.K_LEFT) and (direction != "right"):
                 direction = "left"
 
             #right arrow
-            elif event.key == pygame.K_RIGHT:
+            elif (event.key == pygame.K_RIGHT) and (direction != "left"):
                 direction = "right"
 
     #move snake
@@ -92,9 +93,9 @@ while running:
 
     ### snake collisions ###    
     #end game if snake body
-##    snakeCollisionList = pygame.sprite.spritecollide(snake, bodyParts_x, bodyParts_y, False)
-##    for i in snakeCollisionList:
-##        running = False
+    snakeCollisionList = pygame.sprite.spritecollide(snake, trailList, False)
+    for i in snakeCollisionList:
+        running = False
 
     #end game if hit wall
     snakeCoord = snake.rect.center
@@ -122,9 +123,16 @@ while running:
     if len(xTrail) > snakeLength:
         xTrail.remove(xTrail[0])
 
-    if len(yTrail) > snakeLength:
+    if len(yTrail) > (snakeLength):
         yTrail.remove(yTrail[0])
+
+    trailList.empty()
       
+    for i in range(0, (snakeLength)):
+        trail = SnakeBody(WHITE, width, height)
+        trail.rect.x = xTrail[i]
+        trail.rect.y = yTrail[i]
+        trailList.add(trail)
 
 
     ### food ###
@@ -153,6 +161,7 @@ while running:
     #update sprite list
     spritesList.update()
     foodList.update()
+    trailList.update()
 
     #remove sprite trails
     screen.fill(BLACK)
@@ -160,6 +169,7 @@ while running:
     #draw sprites
     spritesList.draw(screen)
     foodList.draw(screen)
+    trailList.draw(screen)
     
     #refresh screen
     pygame.display.update()
